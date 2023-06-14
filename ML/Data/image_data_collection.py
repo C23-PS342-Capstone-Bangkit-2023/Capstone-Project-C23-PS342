@@ -4,9 +4,7 @@ def download(apa_yang_mau_didownload, limit, output_dir='indonesian_food'):
     try:
         downloader.download(apa_yang_mau_didownload, limit=limit, output_dir=output_dir, adult_filter_off=True)
     except httplib.IncompleteRead as e:
-        print("IncompleteRead error occurred:", str(e))
-
-
+        print("ada yang error:", str(e))
 
 
 download('ayam geprek', 200)
