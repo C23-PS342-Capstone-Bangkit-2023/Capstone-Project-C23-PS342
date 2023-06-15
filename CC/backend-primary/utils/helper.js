@@ -76,6 +76,8 @@ const camelCaseConvert = (message) => {
 };
 
 const getRequirement = (ageInput, sex, isPregnant) => {
+  const requirementData = staticData;
+  // console.info(requirementData);
   let index = requirementData
     .filter((x) => x.umur <= ageInput)
     .filter((y) => y.kelamin === sex)
@@ -106,14 +108,13 @@ const generateAccumulateTag = (inputTag, oldTag) => {
   let container = oldTag;
   let newTag = inputTag
     .map((single) => {
-      let tmp = single.tag;
+      let tmp = single.tag.trim();
       let tmp2 = tmp.split(',');
       return tmp2;
     })
     .flat(1);
-
-  for (var i = 0; i < newTag.length; i++) {
-    var element = newTag[i];
+  for (let i = 0; i < newTag.length; i++) {
+    let element = newTag[i].trim();
     container[element] = (container[element] || 0) + 1;
   }
 

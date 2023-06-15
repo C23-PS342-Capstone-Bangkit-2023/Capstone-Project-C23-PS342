@@ -214,7 +214,7 @@ const passwordUpdate = async (req, res) => {
 
     const updateStatement = 'UPDATE account SET password=? WHERE user_id=?';
     const update = await db.query(updateStatement, [
-      newPassword,
+      helper.encryption(newPassword),
       search[0].user_id,
     ]);
 
@@ -314,10 +314,7 @@ const addMealsHistory = async (req, res) => {
       return res.status(400).json(resErr);
     }
 
-    // const newMealTag = findMeals.map((single) => single.tag);
-    // console.info(newMealTag);
     const acculumate_tag = JSON.parse(search[0].accumalte_tag);
-    //belom solve, tambahin update ke db suggestion tag
     const dataAccumulateTag = JSON.stringify(
       helper.generateAccumulateTag(findMeals, acculumate_tag)
     );
