@@ -112,12 +112,92 @@ The application will be as simple as possible so that even ordinary people can u
 
 ## Documentation
 ### Machine Learning
-Making the model classification
 
-<div style="text-align: justify">
-  lorem 
-</div>
-<br/>
+#### Food Classification using MobileNet
+
+##### Introduction
+This project is used to detect the nutrition on the food by recognize the food and then get the correspondent nutrition on database 
+
+##### Model Architecture
+In this project, we use transfer learning with MobileNet, a pre-trained convolutional neural network (CNN) architecture, to perform food classification. The intuition behind transfer learning for image classification is that if a model is trained on a large and general enough dataset, this model will effectively serve as a generic model of the visual world. we can then take advantage of these learned feature maps without having to start from scratch by training a large model on a large dataset.
+
+1. Loading the Pre-trained MobileNet Model<br> 
+We loaded the MobileNet model pre-trained on the ImageNet dataset. The ImageNet weights provide a good initial set of learned features for our food classification task. 
+
+2. Freezing the Base Layer<br> 
+To prevent the pre-trained MobileNet model from being updated during training, we froze all the layers. This ensures that only the newly added classification layers will be trained.
+
+3. Adding Custom Classification Layers<br> 
+We constructed a sequential model using the tf.keras.models.Sequential class. First, we added the base MobileNet model, followed by a Flatten layer to convert the 3D feature maps into a 1D vector. Then, a fully connected Dense layer with 512 units and ReLU activation was added to capture more complex patterns in the extracted features. We applied a Dropout layer with a rate of 0.5 to reduce overfitting, followed by a BatchNormalization layer for improved training stability. Finally, a Dense layer with 9 units (representing the number of food categories) and a softmax activation function was added as the output layer.
+
+By following this model architecture, we were able to utilize pre-trained MobileNet models and adapt them to our food classification task using transfer learning. This approach allowed us to achieve accurate predictions while significantly reducing training time and the need for a large labeled dataset.
+
+##### Dataset
+We collected food images from the internet to create our dataset. We utilized web scraping techniques to gather a diverse range of food images. Due to time limitations, we were able to collect a total of 9 different food categories, with 200 images for each category. To ensure proper evaluation and validation of our model, we split the dataset into training and validation sets. The training set consists of 90% of the data, while the remaining 10% is used for validation. Here is an example of our train dataset and validation dataset:
+* Data Train<br><br>
+![Data train]("/assets/data_train.jpeg")
+
+* Data Validation<br><br>
+![Data validation](/assets/data_train.jpeg)
+
+
+##### Training
+To train our food classification model, we utilized Google Colab, a cloud-based platform that provides free access to GPUs. This allowed us to leverage powerful hardware resources for faster model training. Here is an overview of our training process:
+
+1. Data Augmentation <br>
+To enhance the diversity and robustness of our training data, we applied data augmentation techniques using the ImageDataGenerator class from the Keras library. This helped us generate augmented images on-the-fly during training and also reducing overfitting. The following augmentations were applied:
+- Rescaling: Each pixel value in the images was rescaled between 0 and 1.
+- Width Shift Range: Randomly shifted the width of the images by a fraction of 0.2.
+- Height Shift Range: Randomly shifted the height of the images by a fraction of 0.2.
+- Shear Range: Applied random shear transformations to the images.
+- Zoom Range: Randomly zoomed in or out on the images by a factor of 0.4.
+- Horizontal Flip: Randomly flipped the images horizontally.
+
+2. Compiling and Training the Model <br>
+We compiled the model using the SGD optimizer with a learning rate of 0.002 and momentum of 0.9. The categorical cross-entropy loss function and accuracy metric were used. The model was trained for 20 epochs. During each epoch, the model iteratively processed batches of augmented images, adjusted its weights based on the calculated loss, and evaluated its performance on the validation set. The training process aimed to optimize the model's parameters to improve accuracy and minimize the loss.
+
+##### Evaluation
+We use TensorBoard, a powerful visualization toolkit from TensorFlow, to evaluate and monitor the performance of our food classification model. TensorBoard provides interactive visualizations that help analyze various aspects of the model during training and validation.
+
+1. Logging Training Matrics <br>
+During the training process, we logged important metrics to TensorBoard to track the model's progress and performance. These metrics include: <br>
+
+- Loss: We monitored the training loss, which measures the discrepancy between predicted and actual labels. A lower loss indicates better model convergence.
+
+- Accuracy: We tracked the training accuracy, which measures the proportion of correctly classified food images during training.
+2. Saving TensorBoard Logs<br>
+We saved the TensorBoard logs during training for future reference and comparison. By keeping a record of the logs, we could revisit previous training sessions, compare different model iterations, and track the model's improvement over time.
+3. Visualizing Loss and Accuracy in tensorboard
+<br>
+In the TensorBoard dashboard, we could access the following visualizations:
+
+- Scalar Charts: These charts displayed the trends of the loss and accuracy metrics over training epochs. We could analyze the convergence rate, identify potential overfitting or underfitting, and make informed decisions about model adjustments.
+
+- Histograms: TensorBoard provided histograms of model weights and biases, giving us insights into their distributions and potential issues like vanishing or exploding gradients.
+
+- Graph Visualization: We explored a graphical representation of the model architecture, showing the flow of data between layers. This visualization helped us verify the model's structure and identify any unexpected connections.
+
+##### Detect Nutrition From Image
+After training and evaluating our food classification model, we proceeded to the next task of detecting the nutrition information from food photos. To simulate this process, we utilized a CSV (Comma-Separated Values) file instead of a database. We mapped the food labels to corresponding food IDs stored in the CSV file.
+
+1. CSV Data: We prepared a CSV file containing food IDs and their corresponding nutrition information. Each food ID was associated with specific nutrient values such as calories, protein, carbohydrates, and fat.
+
+2. Mapping Food Labels: We replaced the food labels in the classification model with their respective food IDs from the CSV file. This mapping allowed us to associate each food photo prediction with the correct food ID.
+
+3. Prediction and Display: We used the trained classification model to predict the food labels from various food photos. If the prediction was accurate, we retrieved the corresponding food name data from the CSV file using the mapped food ID. Along with the accurate food name, the associated nutrient information was displayed.
+
+
+
+##### Deployment
+We deployed the model on Mobile Application. to do so we need to convert the  model into TFLite format. The deployment process involved saving the model and converting it into the TFLite format.
+
+- Saving The Model <br>
+We saved the trained model, including its architecture and learned weights, to a specified directory.
+
+- Converting to TFLite <br>
+The saved model was then converted to the TFLite format, which is optimized for mobile deployment. This format reduces the model's size while maintaining prediction accuracy.
+
+
 
 ### Cloud Computing
 1. Python 3.7
