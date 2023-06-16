@@ -113,10 +113,10 @@ The application will be as simple as possible so that even ordinary people can u
 ## Documentation
 ### Machine Learning
 
-#### Food Classification using MobileNet
+#### Food Nutrition Detection
 
 ##### Introduction
-This project is used to detect the nutrition on the food by recognize the food and then get the correspondent nutrition on database 
+for food nutrition detection We created a food classification model using transfer learning with the pre-trained Mobilenet model as a base. We added a custom layer to adapt it for our  food classification task. and we train and evaluate the model until can accurately recognize different types of food, after that we moved on our main task, detecting nutrition information from food Images. To accomplish this, we fetch food nutrition data from a database based on the name of the recognized food. We achieve this by assigning the food's nutrition dataset ID as labels to our images data. This allows us to extract accurate nutrition information from the images.
 
 ##### Model Architecture
 In this project, we use transfer learning with MobileNet, a pre-trained convolutional neural network (CNN) architecture, to perform food classification. The intuition behind transfer learning for image classification is that if a model is trained on a large and general enough dataset, this model will effectively serve as a generic model of the visual world. we can then take advantage of these learned feature maps without having to start from scratch by training a large model on a large dataset.
@@ -135,10 +135,10 @@ By following this model architecture, we were able to utilize pre-trained Mobile
 ##### Dataset
 We collected food images from the internet to create our dataset. We utilized web scraping techniques to gather a diverse range of food images. Due to time limitations, we were able to collect a total of 9 different food categories, with 200 images for each category. To ensure proper evaluation and validation of our model, we split the dataset into training and validation sets. The training set consists of 90% of the data, while the remaining 10% is used for validation. Here is an example of our train dataset and validation dataset:
 * Data Train<br><br>
-![Data train]("/assets/data_train.jpeg")
+![Data train](/assets/ML/data_train.jpeg)
 
 * Data Validation<br><br>
-![Data validation](/assets/data_train.jpeg)
+![Data validation](/assets/ML/data_validation.jpeg)
 
 
 ##### Training
@@ -154,7 +154,7 @@ To enhance the diversity and robustness of our training data, we applied data au
 - Horizontal Flip: Randomly flipped the images horizontally.
 
 2. Compiling and Training the Model <br>
-We compiled the model using the SGD optimizer with a learning rate of 0.002 and momentum of 0.9. The categorical cross-entropy loss function and accuracy metric were used. The model was trained for 20 epochs. During each epoch, the model iteratively processed batches of augmented images, adjusted its weights based on the calculated loss, and evaluated its performance on the validation set. The training process aimed to optimize the model's parameters to improve accuracy and minimize the loss.
+We compiled the model using the SGD optimizer with a learning rate of 0.002 and momentum of 0.9. The categorical cross-entropy loss function and accuracy metric were used. The model was trained for 15 epochs. During each epoch, the model iteratively processed batches of augmented images, adjusted its weights based on the calculated loss, and evaluated its performance on the validation set. The training process aimed to optimize the model's parameters to improve accuracy and minimize the loss.
 
 ##### Evaluation
 We use TensorBoard, a powerful visualization toolkit from TensorFlow, to evaluate and monitor the performance of our food classification model. TensorBoard provides interactive visualizations that help analyze various aspects of the model during training and validation.
@@ -171,22 +171,17 @@ We saved the TensorBoard logs during training for future reference and compariso
 <br>
 In the TensorBoard dashboard, we could access the following visualizations:
 
-- Scalar Charts: These charts displayed the trends of the loss and accuracy metrics over training epochs. We could analyze the convergence rate, identify potential overfitting or underfitting, and make informed decisions about model adjustments.
+- Scalar Charts: These charts displayed the trends of the loss and accuracy metrics over training epochs. We could analyze the convergence rate, identify potential overfitting or underfitting, and make informed decisions about model adjustments. Here is accuracy and loss of our model after 15 epochs:
+  - Accuracy chart :
+  ![Data train](/assets/ML/accuracy.png)
+  - Loss chart :
+  ![Data train](/assets/ML/loss.png)
+
+
 
 - Histograms: TensorBoard provided histograms of model weights and biases, giving us insights into their distributions and potential issues like vanishing or exploding gradients.
 
 - Graph Visualization: We explored a graphical representation of the model architecture, showing the flow of data between layers. This visualization helped us verify the model's structure and identify any unexpected connections.
-
-##### Detect Nutrition From Image
-After training and evaluating our food classification model, we proceeded to the next task of detecting the nutrition information from food photos. To simulate this process, we utilized a CSV (Comma-Separated Values) file instead of a database. We mapped the food labels to corresponding food IDs stored in the CSV file.
-
-1. CSV Data: We prepared a CSV file containing food IDs and their corresponding nutrition information. Each food ID was associated with specific nutrient values such as calories, protein, carbohydrates, and fat.
-
-2. Mapping Food Labels: We replaced the food labels in the classification model with their respective food IDs from the CSV file. This mapping allowed us to associate each food photo prediction with the correct food ID.
-
-3. Prediction and Display: We used the trained classification model to predict the food labels from various food photos. If the prediction was accurate, we retrieved the corresponding food name data from the CSV file using the mapped food ID. Along with the accurate food name, the associated nutrient information was displayed.
-
-
 
 ##### Deployment
 We deployed the model on Mobile Application. to do so we need to convert the  model into TFLite format. The deployment process involved saving the model and converting it into the TFLite format.
@@ -197,6 +192,111 @@ We saved the trained model, including its architecture and learned weights, to a
 - Converting to TFLite <br>
 The saved model was then converted to the TFLite format, which is optimized for mobile deployment. This format reduces the model's size while maintaining prediction accuracy.
 
+#### Food Recommendation
+for personalized food recommendations, we use the KNN (K-Nearest Neighbors) model. This model recommends food items to users based on their individual preferences. 
+
+##### Data Understanding
+Here is the information about the dataset we used <br>
+<style>
+  table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+</style>
+<table>
+  <tr>
+    <td>Source</td>
+    <td>https://www.andrafarm.com</td>
+  </tr>
+  <tr>
+    <td>Name</td>
+    <td>Tabel Komposisi Pangan Indonesia (TKPI) 2019</td>
+  </tr>
+  <tr>
+      <td>Number of rows and columns:</td>
+      <td> 1148 row, 22 column</td>
+  </tr>
+</table>
+
+In our dataset, we have a wide range of information about different foods. This information is stored in various columns, including the food name, macro nutrient, micro nutrients, edible weight, whether the food is processed or single ingredient, food category, and the source of the information.
+
+However, for this particular project, we are focusing only on processed foods and specifically looking at the macro nutrient content. We have decided to exclude information about micronutrients and non-processed foods from our analysis.
+
+To streamline our dataset and make it more manageable, we have reduced the number of food entries from 1148 to only 78. These 78 food items are the ones we will be working with for this project.
+
+Additionally, we have included a new feature in our dataset which indicates whether a food item is vegan or non-vegan. This allows us to consider dietary preferences in our analysis. We also add food tag feature to provide additional categorization. Furthermore, we also added ID feature to uniquely identify each food entry, which can be helpful for tracking and referencing purposes. 
+
+here is the list of features that we use in this project:
+
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>id</td>
+    <td>Uniquely identifies each entry in the dataset</td>
+  </tr>
+  <tr>
+    <td>makanan</td>
+    <td>Food name</td>
+  </tr>
+  <tr>
+    <td>kalori</td>
+    <td>The number of calories contained in the food.</td>
+  </tr>
+  <tr>
+    <td>protein</td>
+    <td>The number of proteins contained in the food</td>
+  </tr>
+  <tr>
+    <td>lemak</td>
+    <td>The number of fats contained in the food</td>
+  </tr>
+  <tr>
+    <td>karbohidrat</td>
+    <td>The number of carbohydrates contained in the food</td>
+  </tr>
+  <tr>
+    <td>Kategori</td>
+    <td>The Categories of the food for example: beef, seafood</td>
+  </tr>
+  <tr>
+    <td>vegan/nonvegan</td>
+    <td>Indicates whether the food is suitable for vegan or non-vegan users.</td>
+  </tr>
+  <tr>
+    <td>tag</td>
+    <td>additional categorization</td>
+  </tr>
+</table>
+
+##### Data preprocessing
+
+Here are the steps we took at the data preprocessing stage:
+
+- We removed the category column because it is not very useful for analysis.
+
+- We created a new feature, 'tag_makanan' which is obtained from the merger between the 'vegan/nonvegan' column and the 'tag' column. this is done to collect all the information about food which will be matched to the user's preference data. after that, we chose the columns that will be used as food datasets, these columns are 'makanan', 'kalori', 'protein', 'lemak', 'karbohidrat', 'tag_makanan'.
+
+##### Making Recommendations
+We use the KNN (K-Nearest Neighbors) model. This model recommends food items to users based on their individual preferences. To train our KNN model, we utilize the food tag feature from our food dataset.Using the KNN algorithm, we identify the nearest neighbors to a user's preference by calculating the cosine distance between their preference vector and the food data vector. By analyzing this distance, we can find the most similar food items to the user's preferences.Based on the results, we present the top 4 food recommendations to the user. 
+- Example of users history food: 
+```
+user_history_meals = {
+    "pedas": 2,
+    "gurih": 3,
+    "rebus": 1,
+    "goreng": 5
+}
+```
+- Output <br>
+ ![Data train](/assets/ML/recommendation.png)
+
+
+
+##### Deploy the Model
+To deploy a model in a cloud environment, we typically save our model in a .pkl (pickle file). This pickle format allows us to store the model's parameters, architecture, and other necessary information. When there is a request to use the model, we can load the pickle file and initialize the model, making it ready for inference or prediction in the cloud environment.
 
 
 ### Cloud Computing
